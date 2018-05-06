@@ -11,6 +11,7 @@ mongoose.connect("mongodb://nodtest:"+process.env.MONGO_ATLAS_PW+"@cluster0-shar
 mongoose.Promise = global.Promise;
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
+app.use('/uploads',express.static('uploads'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 

@@ -45,7 +45,7 @@ router.get("/", (req, res, next) => {
   });
   
 
-router.post('/',upLoady.single('productImage'),(req, res, next) =>{
+router.post('/',upLoady.single('Imager'),(req, res, next) =>{
     console.log(req.file);
     const product = new Product({
         _id: new mongoose.Types.ObjectId(),
@@ -58,19 +58,7 @@ router.post('/',upLoady.single('productImage'),(req, res, next) =>{
     .save()
     .then(result => {
         console.log(result);
-        res.status(201).json({
-            message: 'SUCCESS',
-            createdProduct: {
-                name: result.name,
-                description: result.description,
-                votes: result.votes,
-                _id: result._id,
-                request: {
-                    type: 'GET',
-                    url: 'http://localhost:3000/products/'+ result._id
-                }
-            }
-        });
+        res.status(200).json(result);
     })
     .catch(err => {
         console.log(err);
@@ -100,6 +88,8 @@ router.get("/:productId", (req, res, next) => {
         res.status(500).json({ error: err });
       });
 });
+
+
 
 router.patch('/:productId',(req, res, next) =>{
     const id = req.params.productId;
@@ -145,6 +135,41 @@ router.delete('/:productId',(req, res, next) =>{
         res.status(500).json({
             error: err
         });
+    });
+});
+
+router.route('/upvote/:productId').put(function (req, res) {
+
+    Product.findById(req.params.productId, function (err, prod) {
+        if (err) {
+            res.send(err);
+        }
+        prod.votes = prod.votes + 1;
+        prod.save(function (err) {
+            if (err)
+                res.send(err);
+
+            res.json(prod);
+        });
+
+    });
+});
+
+router.route('/:productId').put(function (req, res) {
+
+    Product.findById(req.params.productId, function (err, prod) {
+        if (err) {
+            res.send(err);
+        }
+        prod.name = req.body.name;
+        prod.description = req.body.description;
+        prod.save(function (err) {
+            if (err)
+                res.send(err);
+
+            res.json(prod);
+        });
+
     });
 });
 
